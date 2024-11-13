@@ -1,0 +1,53 @@
+
+db.student.insertMany([
+  { "Rollno": 1, "Name": "Alice", "Class": "B.Tech", "Div": "A", "Subject": "TOC", "Marks": 85, "Address": "Pune" },
+  { "Rollno": 2, "Name": "Bob", "Class": "B.Tech", "Div": "B", "Subject": "DBMS", "Marks": 75, "Address": "Mumbai" },
+  { "Rollno": 3, "Name": "Charlie", "Class": "B.Tech", "Div": "A", "Subject": "SPOS", "Marks": 90, "Address": "Pune" },
+  { "Rollno": 4, "Name": "David", "Class": "B.Tech", "Div": "B", "Subject": "TOC", "Marks": 70, "Address": "Delhi" },
+  { "Rollno": 5, "Name": "Eve", "Class": "B.Tech", "Div": "A", "Subject": "DBMS", "Marks": 80, "Address": "Pune" },
+  { "Rollno": 6, "Name": "Frank", "Class": "B.Tech", "Div": "B", "Subject": "SPOS", "Marks": 85, "Address": "Mumbai" }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "TOC" } },
+  { $group: { _id: null, averageMarks: { $avg: "$Marks" } } }
+]);
+
+db.student.aggregate([
+  { $group: { _id: "$Div", studentCount: { $sum: 1 } } }
+]);
+
+db.student.aggregate([
+  { $match: { Div: "B", Subject: "DBMS" } },
+  { $group: { _id: "$Div", minMarks: { $min: "$Marks" } } },
+  { $lookup: {
+      from: "student",
+      localField: "minMarks",
+      foreignField: "Marks",
+      as: "studentsWithMinMarks"
+    }
+  },
+  { $unwind: "$studentsWithMinMarks" },
+  { $project: { "studentsWithMinMarks.Name": 1, "studentsWithMinMarks.Marks": 1 } }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "SPOS", Address: "Pune" } },
+  { $group: { _id: "$Subject", totalMarks: { $sum: "$Marks" } } }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "DBMS", Marks: { $gt: 70 } } },
+  { $group: { _id: "$Div", count: { $sum: 1 } } }
+]);
+
+db.student.aggregate([
+  { $group: { _id: "$Address", count: { $sum: 1 } } }
+]);
+
+db.student.createIndex({ "Marks": 1 });
+
+db.student.createIndex({ "Div": 1, "Subject": 1 });
+
+db.student.getIndexes();
+

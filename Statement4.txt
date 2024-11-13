@@ -1,0 +1,37 @@
+db.student.insertMany([
+    { Rollno: 1, Name: "Alice", Class: "10th", Div: "A", Subject: "DS", Marks: 85, Address: { City: "Mumbai", Street: "Street 1" } },
+    { Rollno: 2, Name: "Bob", Class: "10th", Div: "A", Subject: "Math", Marks: 75, Address: { City: "Mumbai", Street: "Street 2" } },
+    { Rollno: 3, Name: "Charlie", Class: "11th", Div: "B", Subject: "DS", Marks: 95, Address: { City: "Pune", Street: "Street 3" } },
+    { Rollno: 4, Name: "David", Class: "10th", Div: "A", Subject: "DS", Marks: 65, Address: { City: "Mumbai", Street: "Street 4" } },
+    { Rollno: 5, Name: "Eva", Class: "10th", Div: "C", Subject: "DS", Marks: 88, Address: { City: "Mumbai", Street: "Street 5" } },
+    { Rollno: 6, Name: "Frank", Class: "11th", Div: "A", Subject: "Math", Marks: 80, Address: { City: "Pune", Street: "Street 6" } }
+]);
+db.student.aggregate([
+    { $match: { Subject: "DS" } },
+    { $group: { _id: "$Address.City", maxMarks: { $max: "$Marks" } } }
+]);
+
+db.student.aggregate([
+    { $group: { _id: null, averageMarks: { $avg: "$Marks" } } }
+]);
+
+db.student.aggregate([
+    { 
+        $addFields: { 
+            remarks: { 
+                $cond: { if: { $gte: ["$Marks", 85] }, then: ["Excellent"], else: ["Needs Improvement"] }
+            }
+        }
+    }
+]);
+
+db.student.createIndex({ Name: 1 });
+
+db.student.dropIndex("Name_1");
+
+db.student.aggregate([
+    { $match: { Marks: { $gte: 60 } } },
+    { $sort: { Marks: -1 } },
+    { $group: { _id: "$Class", averageMarks: { $avg: "$Marks" } } }
+]);
+s

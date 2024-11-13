@@ -1,0 +1,68 @@
+db.student.insertMany([
+    { first_name: "Amit", last_name: "Sharma", gender: "male", class: "TE A", grd_point: 32, city: "Bangalore", age: 20, course: "BTech" },
+    { first_name: "Bhakti", last_name: "Patel", gender: "female", class: "SE B", grd_point: 30, city: "Mumbai", age: 18, course: "BTech" },
+    { first_name: "Ravi", last_name: "Singh", gender: "male", class: "TE A", grd_point: 40, city: "Delhi", age: 22, course: "BTech" },
+    { first_name: "Neha", last_name: "Gupta", gender: "female", class: "TE B", grd_point: 35, city: "Chennai", age: 21, course: "BTech" },
+    { first_name: "Vinay", last_name: "Reddy", gender: "male", class: "BE", grd_point: 29, city: "Bangalore", age: 23, course: "BTech" },
+    { first_name: "Priya", last_name: "Verma", gender: "female", class: "MCA", grd_point: 33, city: "Bangalore", age: 24, course: "BTech" },
+    { first_name: "Manoj", last_name: "Patel", gender: "male", class: "TE A", grd_point: 45, city: "Bangalore", age: 19, course: "BTech" },
+    { first_name: "Anjali", last_name: "Rao", gender: "female", class: "SE A", grd_point: 30, city: "Bangalore", age: 20, course: "BTech" },
+    { first_name: "Sandeep", last_name: "Jadhav", gender: "male", class: "TE B", grd_point: 25, city: "Pune", age: 22, course: "BTech" },
+    { first_name: "Raj", last_name: "Kumar", gender: "male", class: "SE B", grd_point: 38, city: "Bangalore", age: 19, course: "BTech" }
+]);
+db.student.find({
+    $or: [
+        { gender: "male" },
+        { class: "TE A" },
+        { grd_point: { $gte: 31 } }
+    ]
+});
+db.student.find({
+    city: "Bangalore",
+    age: { $lte: 19 }
+});
+db.student.updateOne(
+    { first_name: "Bhakti" },
+    { $set: { course: "MCA" } }
+);
+
+db.student.deleteOne({
+    age: 18,
+    gender: "male"
+});
+db.student.deleteOne({
+    last_name: "Jadhav",
+    class: "TE B"
+});
+db.student.find({
+    $nor: [
+        { age: 18 },
+        { age: 20 }
+    ],
+    grd_point: { $gt: 30 }
+});
+
+db.student.insertOne({
+    first_name: "John", 
+    last_name: "Doe", 
+    gender: "male", 
+    class: "TE A", 
+    grd_point: 33, 
+    city: "Bangalore", 
+    age: 21, 
+    course: "BTech"
+});
+
+
+
+
+db.student.save({
+    first_name: "John", 
+    last_name: "Doe", 
+    gender: "male", 
+    class: "TE A", 
+    grd_point: 33, 
+    city: "Bangalore", 
+    age: 21, 
+    course: "BTech"
+});

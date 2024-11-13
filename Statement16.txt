@@ -1,0 +1,36 @@
+Create Table student(
+Roll_no int Primary key,
+Name varchar(50),
+Marks int ,
+Category Varchar(50));
+
+insert into student(Roll_no,Name,Marks)
+Values(21,"Atharva",1200),
+(22,"Siddhant",950),
+(23,"Kiran",870),
+(24,"Nishant",800),
+(25,"Prathamesh",1300);
+
+select * from student;
+
+Delimiter //
+CREATE PROCEDURE categorize_students()
+BEGIN
+UPDATE student
+SET category = 'Distinction'
+WHERE marks >= 990 AND marks <= 1500;
+UPDATE student
+SET category = 'First Class'
+WHERE marks >= 900 AND marks <= 989;
+UPDATE student
+SET category = 'Higher Second Class'
+WHERE marks >= 825 AND marks <= 899;
+UPDATE student
+SET category = 'Not Categorised'
+WHERE marks < 825;
+END //
+Delimiter ;
+
+CALL categorize_students();
+SELECT * FROM student;
+

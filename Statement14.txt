@@ -1,0 +1,108 @@
+CREATE TABLE Sales_Representative (
+Rep_no INT PRIMARY KEY,
+Name VARCHAR(50),
+Re_office VARCHAR(50),
+Quota DECIMAL(10, 2),
+Sales DECIMAL(10, 2)
+);
+
+CREATE TABLE Customers (
+Cust_No INT PRIMARY KEY,
+Company VARCHAR(50),
+Cust_Rep INT,
+Credit_Limit DECIMAL(10, 2),
+FOREIGN KEY (Cust_Rep) REFERENCES Sales_Representative(Rep_no)
+);
+
+CREATE TABLE Orders (
+Order_no INT PRIMARY KEY,
+cust INT,
+product VARCHAR(50),
+Quantity INT,
+amount DECIMAL(10, 2),
+Disc DECIMAL(5, 2),
+FOREIGN KEY (cust) REFERENCES Customers(Cust_No)
+);
+
+INSERT INTO Sales_Representative (Rep_no, Name, Re_office, Quota, Sales)
+VALUES(1, 'Alice Johnson', 'New York', 50000, 48000),
+(2, 'Bob Smith', 'Los Angeles', 60000, 62000),
+(3, 'Charlie Green', 'New York', 70000, 72000),
+(4, 'Dana White', 'Chicago', 55000, 54000);
+
+INSERT INTO Customers (Cust_No, Company, Cust_Rep, Credit_Limit)
+VALUES (101, 'Tech Corp', 1, 15000),
+(102, 'Innovate Inc', 2, 20000),
+(103, 'Creative Solutions', 3, 30000),
+(104, 'Bright Ideas Ltd', 4, 25000);
+
+INSERT INTO Orders (Order_no, cust, product, Quantity, amount, Disc)
+VALUES (1001, 101, 'software', 10, 12000, 5),
+(1002, 102, 'hardware', 15, 18000, 10),
+(1003, 103, 'software', 20, 25000, 15),
+(1004, 104, 'services', 5, 8000, 3),
+(1005, 101, 'software', 8, 13000, 7);
+
+SELECT 
+    C.Company AS Customer_Name,
+    C.Credit_Limit,
+    SR.Name AS Rep_Name,
+    SR.Sales AS Rep_Sales
+FROM 
+    Customers C
+JOIN 
+    Sales_Representative SR ON C.Cust_Rep = SR.Rep_no;
+    
+SELECT 
+    O.Order_no,
+    O.amount,
+    C.Company AS Customer_Name,
+    C.Credit_Limit
+FROM 
+    Orders O
+JOIN 
+    Customers C ON O.cust = C.Cust_No;
+
+SELECT 
+    product,
+    SUM(amount) AS Total_Sale_Amount
+FROM 
+    Orders
+GROUP BY 
+    product
+HAVING 
+    SUM(amount) > 12000;
+  
+SELECT 
+    O.amount,
+    C.Company AS Customer_Name,
+    SR.Name AS Rep_Name
+FROM 
+    Orders O
+JOIN 
+    Customers C ON O.cust = C.Cust_No
+JOIN 
+    Sales_Representative SR ON C.Cust_Rep = SR.Rep_no
+WHERE 
+    O.product = 'software';
+    
+SELECT 
+    C.Company AS Customer_Name,
+    C.Credit_Limit,
+    O.Disc AS Discount
+FROM 
+    Orders O
+JOIN 
+    Customers C ON O.cust = C.Cust_No;
+
+SELECT 
+    SR1.Name AS Rep_Name_1,
+    SR2.Name AS Rep_Name_2,
+    SR1.Re_office AS Office
+FROM 
+    Sales_Representative SR1
+JOIN 
+    Sales_Representative SR2 ON SR1.Re_office = SR2.Re_office
+WHERE 
+    SR1.Rep_no <> SR2.Rep_no;
+

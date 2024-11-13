@@ -1,0 +1,81 @@
+CREATE TABLE Branch (
+branchno INT PRIMARY KEY,
+street VARCHAR(255),
+city VARCHAR(255),
+postcode VARCHAR(10)
+);
+
+ CREATE TABLE Staff (
+staffno VARCHAR(10) PRIMARY KEY,
+fname VARCHAR(50),
+lname VARCHAR(50),
+position VARCHAR(50),
+sex CHAR(1),
+dob DATE,
+salary DECIMAL(10, 2),
+branchno INT,
+FOREIGN KEY (branchno) REFERENCES Branch(branchno)
+);
+CREATE TABLE PropertyforRent (
+propertyNo INT PRIMARY KEY,
+street VARCHAR(255),
+city VARCHAR(255),
+postcode VARCHAR(10),
+type VARCHAR(50),
+rooms INT,
+rent DECIMAL(10, 2),
+staffno VARCHAR(10),
+branchno INT,
+FOREIGN KEY (staffno) REFERENCES Staff(staffno),
+FOREIGN KEY (branchno) REFERENCES Branch(branchno)
+);
+
+INSERT INTO Branch (branchno, street, city, postcode) VALUES
+(1, 'MG Road', 'Pune', '411041'),
+(2, 'FC Road', 'Pune', '411042'),
+(3, 'JM Road', 'Mumbai', '400001');
+
+INSERT INTO Staff (staffno, fname, lname, position, sex, dob, salary, branchno) VALUES
+('S101', 'John', 'Doe', 'Manager', 'M', '1980-05-10', 55000, 1),
+('S102', 'Jane', 'Smith', 'Sales', 'F', '1985-08-15', 45000, 2),
+('S123', 'Alice', 'Taylor', 'Sales', 'F', '1990-10-20', 50000, 1),
+('S106', 'Raj', 'Verma', 'Manager', 'M', '1975-04-12', 60000, 3),
+('S150', 'Aakash', 'Sinha', 'Agent', 'M', '1992-07-15', 40000, 1);
+
+INSERT INTO PropertyforRent (propertyNo, street, city, postcode, type, rooms, rent, staffno, branchno) VALUES
+(1001, 'MG Road', 'Pune', '411041', 'Apartment', 2, 20000, 'S101', 1),
+(1002, 'FC Road', 'Pune', '411042', 'Villa', 3, 35000, 'S102', 2),
+(1003, 'Andheri', 'Mumbai', '400001', 'Apartment', 2, 25000, 'S106', 3);
+
+select * from Staff;
+UPDATE Staff SET lname = 'Shinde' WHERE staffno = 'S106';
+SELECT * FROM Staff WHERE fname LIKE '%A%A%' OR lname LIKE '%A%A%';
+
+SELECT branchno, MAX(salary) AS max_salary
+FROM Staff
+GROUP BY branchno
+ORDER BY max_salary DESC;
+
+SELECT * FROM PropertyforRent
+WHERE staffno = 'S106';
+
+SELECT AVG(rent) AS avg_rent FROM PropertyforRent
+WHERE city = 'Pune';
+
+SELECT branchno, COUNT(propertyNo) AS property_count
+FROM PropertyforRent
+GROUP BY branchno;
+
+DELETE FROM PropertyforRent
+WHERE branchno = (SELECT branchno FROM Branch WHERE postcode = '411041');
+DELETE FROM Staff
+WHERE branchno = (SELECT branchno FROM Branch WHERE postcode = '411041');
+DELETE FROM Branch
+WHERE postcode = '411041';
+
+select * from Branch;
+select * from Staff;
+select * from PropertyforRent;
+
+
+

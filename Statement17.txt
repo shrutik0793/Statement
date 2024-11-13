@@ -1,0 +1,73 @@
+CREATE TABLE Borrower(
+  Rollin INT PRIMARY KEY,
+  Name VARCHAR(30),
+  Date_of_issue DATE,
+  Name_of_book VARCHAR(30),
+  Status VARCHAR(30)
+);
+
+CREATE TABLE Fine (
+  roll_no INT PRIMARY KEY,
+  Date DATE,
+  Amount INT
+);
+
+INSERT INTO Borrower (Rollin, Name, Date_of_issue, Name_of_book, Status)
+VALUES
+  (1, 'Nishant', '2024-11-10', 'Toc', 'issued'),
+  (2, 'Vibhav', '2024-10-13', 'Dbms', 'issued'),
+  (3, 'Aaditya', '2024-10-09', 'Spm', 'issued'),
+  (4, 'Prathamesh', '2024-10-21', 'Spos', 'issued');
+
+SELECT * FROM Borrower;
+
+DELIMITER //
+
+CREATE PROCEDURE finecal(IN roll_no INT, IN book_name CHAR(20))
+BEGIN
+  DECLARE v_doi DATE;
+  DECLARE noofdays INT;
+  DECLARE fine DOUBLE;
+  DECLARE f1 INT DEFAULT 0;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET f1 = 1;
+
+  SELECT Date_of_issue INTO v_doi
+  FROM Borrower
+  WHERE Rollin = roll_no AND Name_of_book = book_name;
+
+  IF f1 = 1 THEN
+    SELECT 'Record not found' AS Message;
+  ELSE
+    SET noofdays = DATEDIFF(CURDATE(), v_doi);
+
+    IF noofdays >= 15 AND noofdays <= 30 THEN
+      SET fine = noofdays * 5;
+    ELSEIF noofdays > 30 THEN
+      SET fine = noofdays * 50;
+    ELSE
+      SET fine = 0;
+    END IF;
+
+    SELECT fine AS FineAmount;
+
+    UPDATE Borrower
+    SET Status = 'Returned'
+    WHERE Rollin = roll_no AND Name_of_book = book_name;
+
+    IF fine > 0 THEN
+      INSERT INTO Fine (roll_no, Date, Amount)
+      VALUES (roll_no, CURDATE(), fine);
+    END IF;
+  END IF;
+END //
+
+DELIMITER ;
+
+CALL finecal(1, 'Toc');
+CALL finecal(2, 'Dbms');
+CALL finecal(3, 'Spm');
+CALL finecal(4, 'Spos');
+
+SELECT * FROM Fine;
+SELECT * FROM Borrower;

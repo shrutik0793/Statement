@@ -1,0 +1,55 @@
+db.createCollection("mapReduce");
+
+db.mapReduce.insertMany([
+    { rollNo: 40, name: "Kiran", std: "TE", div: "A", subject: "DBMS", marks: 80 },
+    { rollNo: 30, name: "Siddhant", std: "TE", div: "A", subject: "DBMS", marks: 85 },
+    { rollNo: 35, name: "Nishant", std: "TE", div: "B", subject: "DBMS", marks: 67 },
+    { rollNo: 45, name: "Atharva", std: "TE", div: "B", subject: "DBMS", marks: 70 },
+    { rollNo: 46, name: "Pranav", std: "TE", div: "A", subject: "DBMS", marks: 20 }
+]);
+
+db.mapReduce.mapReduce(
+    function() {
+        if (this.subject === "DBMS") {
+            if (this.marks > 70) {
+                emit("Highscores", 1);
+            } else if (this.marks > 40) {
+                emit("Average scores", 1);
+            } else {
+                emit("Failed", 1);
+            }
+        }
+    },
+    function(key, values) {
+        return Array.sum(values);
+    },
+    {
+        out: "student_score_categories"
+    }
+);
+
+db.student_score_categories.find().pretty();
+
+db.mapReduce.mapReduce(
+    function() {
+        if (this.subject === "DBMS") {
+            emit("DBMS_Average", { score: this.marks, count: 1 });
+        }
+    },
+    function(key, values) {
+        var result = { score: 0, count: 0 };
+        values.forEach(function(value) {
+            result.score += value.score;
+            result.count += value.count;
+        });
+        return result;
+    },
+    {
+        out: "dbms_average",
+        finalize: function(key, reducedValue) {
+            reducedValue.average = reducedValue.score / reducedValue.count;
+            return reducedValue;
+        }
+    }
+);
+db.dbms_average.find().pretty();

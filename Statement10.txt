@@ -1,0 +1,69 @@
+CREATE TABLE Branch (
+branchno INT PRIMARY KEY,
+street VARCHAR(100),
+city VARCHAR(100),
+postcode VARCHAR(10)
+ );
+
+CREATE TABLE Staff (
+staffno INT PRIMARY KEY,
+fname VARCHAR(50),
+lname VARCHAR(50),
+position VARCHAR(50),
+sex CHAR(1),
+DOB DATE,
+salary DECIMAL(10, 2),
+branchno INT,
+FOREIGN KEY (branchno) REFERENCES Branch(branchno)
+);
+
+CREATE TABLE PropertyForRent (
+propertyNo INT PRIMARY KEY,
+street VARCHAR(100),
+city VARCHAR(100),
+postcode VARCHAR(10),
+type VARCHAR(50),
+rooms INT,
+rent DECIMAL(10, 2),
+staffno INT,
+branchno INT,
+FOREIGN KEY (staffno) REFERENCES Staff(staffno),
+FOREIGN KEY (branchno) REFERENCES Branch(branchno)
+);
+
+INSERT INTO Branch (branchno, street, city, postcode) VALUES
+(1001, 'Main St', 'Mumbai', '400001'),
+(1002, 'Oak Rd', 'Pune', '411001');
+INSERT INTO Staff (staffno, fname, lname, position, sex, DOB, salary, branchno) VALUES
+(1, 'John', 'Doe', 'Manager', 'M', '1980-05-15', 75000, 1001),
+(2, 'Jane', 'Smith', 'Saleswoman', 'F', '1990-07-22', 50000, 1001),
+(3, 'Mike', 'Brown', 'Salesman', 'M', '2004-02-02', 45000, 1002),
+(4, 'Emily', 'Davis', 'Accountant', 'F', '1995-11-30', 55000, 1002);
+INSERT INTO PropertyForRent (propertyNo, street, city, postcode, type, rooms, rent, staffno, branchno) VALUES
+(101, 'MG Road', 'Pune', '411001', 'Flat', 3, 20000, 2, 1001),
+(102, 'Hill St', 'Mumbai', '400001', 'Villa', 5, 50000, 1, 1001),
+(103, 'Shivaji Rd', 'Pune', '411001', 'Flat', 2, 18000, 3, 1002);
+
+SELECT * FROM Branch;
+SELECT * FROM Staff;
+SELECT * FROM PropertyForRent;
+UPDATE Branch SET street = 'MG' WHERE branchno = 1001;
+SELECT * FROM Branch;
+SELECT fname, lname FROM Staff
+WHERE salary > (SELECT AVG(salary) FROM Staff);
+SELECT type, rooms FROM PropertyForRent
+WHERE city = 'Pune';
+SELECT fname, lname FROM Staff 
+WHERE position IN ('Salesman', 'Saleswoman');
+SELECT COUNT(*) AS NumberOfFlats FROM PropertyForRent
+WHERE type = 'Flat';
+SELECT fname, lname, DOB FROM Staff
+WHERE DOB < '2004-01-01';
+SELECT branchno, COUNT(staffno) AS NumberOfStaff FROM Staff
+GROUP BY branchno;
+
+
+
+
+
+
